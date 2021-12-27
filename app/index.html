@@ -94,6 +94,11 @@
 
 				setTimeout(()=> alert.classList.add('hide'), 3000)
 			}
+
+			// Toggle nav
+			ipcRenderer.on('nav:toggle',()=>{
+				document.getElementById('nav').classList.toggle('hide')
+			})
 		</script>
 	</body>
 </html>

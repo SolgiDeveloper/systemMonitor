@@ -1,15 +1,20 @@
 const { app, BrowserWindow, Menu, ipcMain } = require('electron')
+const path = require('path')
 const log = require('electron-log')
 const Store = require('./Store')
+const MainWindow = require('./MainWindow')
+const AppTray = require('./AppTray')
 
 // Set env
 process.env.NODE_ENV = 'development'
+// process.env.NODE_ENV = 'production'
 
 const isDev = process.env.NODE_ENV !== 'production'
 const isMac = process.platform === 'darwin'
 const isWin = process.platform === 'win32'
 
 let mainWindow
+let tray
 // init store & defaults
 const store = new Store({
   configName: 'user-settings',
@@ -24,31 +29,38 @@ const store = new Store({
 app.on( 'ready',()=>{
   const mainMenu = Menu.buildFromTemplate(menu)
   Menu.setApplicationMenu(mainMenu)
-  mainWindow = new BrowserWindow({
-    title: 'System Monitor',
-    width: isDev ? 800 : 355,
-    height: 500,
-    icon: './assets/icons/icon.png',
-    resizable: isDev,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-    }
-  })
+  mainWindow = new MainWindow('./app/index.html',isDev)
 
-  if (isDev) {
-    mainWindow.webContents.openDevTools()
-  }
-  mainWindow.loadFile('./app/index.html')
   mainWindow.webContents.on('dom-ready', ()=>{
     mainWindow.webContents.send('settings:get', store.get('settings'))
   })
+
+  mainWindow.on('close', e =>{
+    if (!app.isQuitting){
+      e.preventDefault()
+      mainWindow.hide()
+    }
+
+    return true
+  })
+  const icon = path.join(__dirname, 'assets', 'icons', 'icon.png')
+  //create tray
+  tray = new AppTray(icon, mainWindow)
 })
 
 const menu = [
-  ...(isWin ? [{ role: 'appMenu' }] : []),
+  // ...(isWin ? [{ role: 'appMenu' }] : []),
+  // {
+  //   role: 'fileMenu',
+  // },
   {
-    role: 'fileMenu',
+    label: 'View',
+    submenu: [
+      {
+        label: 'Toggle Navigation',
+        click: ()=> mainWindow.webContents.send('nav:toggle')
+      }
+    ]
   },
   ...(isDev
     ? [
