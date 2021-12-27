@@ -6,7 +6,7 @@ class Store {
   constructor(options) {
     const userDatePath = (electron.app || electron.remote.app).getPath('userData')
     this.path = path.join(userDatePath, options.configName + '.json')
-    this.data = parseDataFile(this.path, options.default)
+    this.data = parseDataFile(this.path, options.defaults)
   }
 
   get(key) {

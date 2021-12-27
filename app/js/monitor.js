@@ -1,9 +1,15 @@
 const path = require('path')
+const {ipcRenderer} = require('electron')
 const {cpu, mem, os} = require('node-os-utils')
 
-let cpuOverload = 5
-let alertFrequency = 1
+let cpuOverload
+let alertFrequency
 
+//get settings & values
+ipcRenderer.on('settings:get', (e, settings) => {
+  cpuOverload = +settings.cpuOverload
+  alertFrequency = +settings.alertFrequency
+})
 // run every 2 sec
 setInterval(()=>[
   //cpu usage
@@ -75,6 +81,6 @@ function runNotify(frequency) {
   const now = new Date()
   const diffTime = Math.abs(now -notifyTime)
   const minutesPassed = Math.ceil(diffTime / (1000 * 60))
-
+  console.log('minutesPassed > frequency',minutesPassed > frequency)
   return minutesPassed > frequency
 }

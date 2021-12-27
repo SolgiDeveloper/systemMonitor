@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu } = require('electron')
+const { app, BrowserWindow, Menu, ipcMain } = require('electron')
 const log = require('electron-log')
 const Store = require('./Store')
 
@@ -39,8 +39,10 @@ app.on( 'ready',()=>{
   if (isDev) {
     mainWindow.webContents.openDevTools()
   }
-
   mainWindow.loadFile('./app/index.html')
+  mainWindow.webContents.on('dom-ready', ()=>{
+    mainWindow.webContents.send('settings:get', store.get('settings'))
+  })
 })
 
 const menu = [
@@ -62,7 +64,11 @@ const menu = [
       ]
     : []),
 ]
-
+// set settings
+ipcMain.on('settings:set', (e, value) =>{
+  store.set('settings', value)
+  mainWindow.webContents.send('settings:get', store.get('settings'))
+})
 app.on('window-all-closed', () => {
   if (!isWin) {
     app.quit()
