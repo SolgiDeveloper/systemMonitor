@@ -1,5 +1,5 @@
 # systemMonitor
-simple desktop app for monitoring system cpu
+simple desktop app for monitoring system cpu & memory
 
 # development
 npm run start
