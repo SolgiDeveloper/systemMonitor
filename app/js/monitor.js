@@ -11,9 +11,9 @@ ipcRenderer.on('settings:get', (e, settings) => {
   alertFrequency = +settings.alertFrequency
 })
 // run every 2 sec
-setInterval(()=>[
+setInterval(()=> {
   //cpu usage
-  cpu.usage().then(info =>{
+  cpu.usage().then(info => {
     document.getElementById('cpu-usage').innerText = `${info}%`
 
     document.getElementById('cpu-progress').style.width = `${info}%`
@@ -38,9 +38,13 @@ setInterval(()=>[
   cpu.free().then(info =>{
     document.getElementById('cpu-free').innerText = `${info}%`
   }),
+  //memory free
+  mem.info().then(info =>{
+    document.getElementById('mem-free').innerText = `${info.freeMemPercentage}%`
+  })
   // uptime
   document.getElementById('sys-uptime').innerText = secondToDhms(os.uptime())
-], 2000)
+}, 2000)
 
 // set model
 document.getElementById('cpu-model').innerText = cpu.model()

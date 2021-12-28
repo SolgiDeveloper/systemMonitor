@@ -6,8 +6,8 @@ const MainWindow = require('./MainWindow')
 const AppTray = require('./AppTray')
 
 // Set env
-process.env.NODE_ENV = 'development'
-// process.env.NODE_ENV = 'production'
+// process.env.NODE_ENV = 'development'
+process.env.NODE_ENV = 'production'
 
 const isDev = process.env.NODE_ENV !== 'production'
 const isMac = process.platform === 'darwin'
